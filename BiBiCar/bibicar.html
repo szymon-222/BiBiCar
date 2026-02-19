@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bibi Car – Wypożyczalnia Aut</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand: #FFB800; --brand-dark: #e0a200; --brand-light: #FFF8E1;
+      --text: #1a1a1a; --muted: #6b7280; --border: #e5e7eb;
+      --bg: #ffffff; --card-bg: #f9fafb;
+      --green: #22c55e; --red: #ef4444; --blue: #3b82f6;
+    }
+    body { font-family: 'Lato', sans-serif; color: var(--text); background: var(--bg); }
+    h1,h2,h3,h4,.logo-name,nav a,.stat-number { font-family: 'Montserrat', sans-serif; }
+
+    /* ── HEADER ── */
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 40px; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: #fff; z-index: 200;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; cursor: pointer; }
+    .logo-icon { width: 42px; height: 42px; background: var(--brand); border-radius: 10px; display: grid; place-items: center; font-weight: 900; font-family: 'Montserrat',sans-serif; font-size: 15px; color: #fff; }
+    .logo-name { font-size: 16px; font-weight: 700; color: var(--text); line-height: 1.1; }
+    .logo-sub { font-size: 11px; font-weight: 400; color: var(--muted); }
+    nav { display: flex; gap: 4px; }
+    nav a { text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 600; padding: 8px 14px; border-radius: 8px; transition: color .2s; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+    nav a:hover { color: var(--text); }
+    nav a.active { color: var(--brand); border-bottom: 2px solid var(--brand); border-radius: 0; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-contact { text-align: right; font-size: 13px; }
+    .header-contact strong { display: block; font-size: 14px; font-family: 'Montserrat',sans-serif; }
+    .header-contact span { color: var(--muted); font-size: 12px; }
+    .btn-primary { background: var(--brand); color: #fff; border: none; padding: 11px 22px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; transition: background .2s; }
+    .btn-primary:hover { background: var(--brand-dark); }
+    .btn-admin-tog { background: var(--card-bg); color: var(--muted); border: 1px solid var(--border); padding: 9px 16px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: all .2s; }
+    .btn-admin-tog:hover { background: var(--text); color: #fff; border-color: var(--text); }
+    .btn-admin-tog.on { background: var(--text); color: #fff; border-color: var(--text); }
+
+    /* ── PAGES ── */
+    .page { display: none; min-height: calc(100vh - 73px); }
+    .page.active { display: block; }
+
+    /* ── HOME ── */
+    .hero { background: linear-gradient(135deg, #FFB800 0%, #FFC93C 60%, #FFD966 100%); border-radius: 20px; margin: 30px 40px; padding: 60px 50px; position: relative; overflow: hidden; }
+    .hero::after { content: ''; position: absolute; right: -40px; top: -40px; width: 300px; height: 300px; border-radius: 50%; background: rgba(255,255,255,.12); }
+    .hero-badge { font-size: 13px; color: rgba(255,255,255,.85); margin-bottom: 16px; font-weight: 600; }
+    .hero h1 { font-size: clamp(28px,4vw,44px); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 18px; max-width: 520px; }
+    .hero p { color: rgba(255,255,255,.9); font-size: 16px; margin-bottom: 32px; max-width: 480px; line-height: 1.6; }
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-white { background: #fff; color: var(--text); border: none; padding: 13px 24px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,.8); padding: 11px 24px; border-radius: 10px; font-family: 'Montserrat',sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 30px 40px; }
+    .stat-card { border: 1px solid var(--border); border-radius: 14px; padding: 24px 20px; }
+    .stat-number { font-size: 32px; font-weight: 800; color: var(--brand); margin-bottom: 6px; }
+    .stat-label { font-size: 13px; color: var(--muted); }
+    .why-section { margin: 10px 40px 60px; }
+    .why-section h2 { font-size: 24px; font-weight: 800; margin-bottom: 20px; }
+    .why-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .why-card { border: 1px solid var(--border); border-radius: 14px; padding: 28px 22px; }
+    .why-icon { font-size: 28px; margin-bottom: 14px; }
+    .why-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .why-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ── SHARED ── */
+    .page-header { padding: 40px 40px 24px; }
+    .page-header h1 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+    .page-header p { color: var(--muted); font-size: 15px; }
+
+    /* ── FLEET ── */
+    .fleet-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; padding: 0 40px 60px; }
+    .car-card { border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: box-shadow .2s; }
+    .car-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+    .car-img-area { background: var(--card-bg); height: 160px; display: grid; place-items: center; font-size: 72px; }
+    .car-info { padding: 16px; }
+    .car-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .car-name { font-size: 17px; font-weight: 700; font-family: 'Montserrat',sans-serif; }
+    .badge-av { background: #FFF3CD; color: #b07d00; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .badge-unav { background: #FEE2E2; color: #b91c1c; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .car-type { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+    .car-bottom { display: flex; align-items: center; justify-content: space-between; }
+    .car-price { font-size: 26px; font-weight: 800; color: var(--brand); font-family: 'Montserrat',sans-serif; }
+    .car-price span { font-size: 13px; color: var(--muted); font-weight: 400; }
+
+    /* ── CENNIK ── */
+    .cennik-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; padding: 0 40px 30px; }
+    .price-card { border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; }
+    .price-card.featured { border-color: var(--brand); background: #FFFBEB; }
+    .feat-badge { background: var(--brand); color: #fff; font-size: 10px; font-weight: 800; padding: 4px 12px; border-radius: 20px; font-family: 'Montserrat',sans-serif; letter-spacing: .5px; display: inline-block; margin-bottom: 10px; }
+    .price-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .price-card .sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .price-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .price-row:last-child { border-bottom: none; }
+    .price-row .val { font-weight: 700; }
+    .price-card.featured .val { color: var(--brand); }
+    .inc-box { margin: 0 40px 60px; border: 1px solid var(--border); border-radius: 16px; padding: 28px 32px; }
+    .inc-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .inc-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+    .inc-item { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+    .inc-item::before { content: '✓'; color: var(--brand); font-weight: 700; font-size: 16px; }
+
+    /* ── O NAS ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 0 40px 36px; }
+    .about-grid h3 { font-size: 20px; font-weight: 800; margin-bottom: 16px; }
+    .about-grid p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
+    .about-list { list-style: none; }
+    .about-list li { padding: 8px 0; font-size: 14px; display: flex; align-items: center; gap: 10px; }
+    .about-list li::before { content: '→'; color: var(--brand); font-weight: 700; }
+    .about-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin: 0 40px 60px; }
+
+    /* ── REZERWACJA ── */
+    .rez-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 30px; padding: 0 40px 60px; }
+    .contact-card { border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; }
+    .contact-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+    .c-item { display: flex; gap: 14px; margin-bottom: 20px; align-items: flex-start; }
+    .c-ico { width: 40px; height: 40px; background: #fff5cc; border-radius: 10px; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+    .c-label { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+    .c-val { font-size: 14px; font-weight: 700; }
+    .c-sub { font-size: 12px; color: var(--muted); }
+    .form-card { border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+    .form-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; }
+    .fg { margin-bottom: 18px; }
+    .fg label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; font-family: 'Montserrat',sans-serif; }
+    .fg input, .fg select, .fg textarea { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: 'Lato',sans-serif; color: var(--text); outline: none; transition: border-color .2s; }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--brand); }
+    .fg textarea { min-height: 100px; resize: vertical; }
+    .form-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .btn-sub { width: 100%; background: var(--brand); color: #fff; border: none; padding: 16px; border-radius: 12px; font-family: 'Montserrat',sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; transition: background .2s; }
+    .btn-sub:hover { background: var(--brand-dark); }
+
+    /* ── ADMIN ── */
+    #page-admin { background: #f4f6f9; }
+    .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 73px); }
+    .admin-sidebar { background: #1a1a2e; color: #fff; padding: 28px 0; display: flex; flex-direction: column; position: sticky; top: 73px; height: calc(100vh - 73px); overflow-y: auto; }
+    .adm-sid-hdr { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+    .adm-sid-hdr p { font-size: 13px; font-weight: 700; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: 1px; }
+    .adm-sid-hdr strong { display: block; font-size: 14px; font-weight: 700; color: #fff; margin-top: 4px; }
+    .adm-nav { display: flex; flex-direction: column; gap: 2px; padding: 0 12px; }
+    .adm-nav a { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 10px; color: rgba(255,255,255,.65); font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; font-family: 'Montserrat',sans-serif; }
+    .adm-nav a:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .adm-nav a.active { background: var(--brand); color: #fff; }
+    .adm-nav .ni { font-size: 18px; width: 24px; text-align: center; }
+    .adm-nav .nbadge { margin-left: auto; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+    .adm-foot { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,.1); }
+    .btn-logout { width: 100%; background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: 'Montserrat',sans-serif; font-weight: 600; transition: all .2s; }
+    .btn-logout:hover { background: var(--red); color: #fff; }
+    .adm-content { padding: 32px; overflow-y: auto; }
+    .adm-page { display: none; }
+    .adm-page.active { display: block; }
+    .adm-title { font-size: 24px; font-weight: 800; margin-bottom: 4px; font-family: 'Montserrat',sans-serif; }
+    .adm-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+    .kpi { background: #fff; border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; position: relative; overflow: hidden; }
+    .kpi::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .kpi.y::before { background: var(--brand); }
+    .kpi.g::before { background: var(--green); }
+    .kpi.b::before { background: var(--blue); }
+    .kpi.r::before { background: var(--red); }
+    .kpi-ico { font-size: 28px; margin-bottom: 12px; }
+    .kpi-val { font-size: 28px; font-weight: 800; font-family: 'Montserrat',sans-serif; margin-bottom: 4px; }
+    .kpi-lbl { font-size: 13px; color: var(--muted); }
+
+    .adm-card { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 24px; }
+    .adm-card-hdr { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+    .adm-card-hdr h3 { font-size: 16px; font-weight: 700; }
+    .adm-card-hdr p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); background: var(--card-bg); border-bottom: 1px solid var(--border); }
+    td { padding: 13px 16px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafafa; }
+
+    .sbadge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .sbadge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+    .s-new { background: #EFF6FF; color: var(--blue); } .s-new::before { background: var(--blue); }
+    .s-confirmed { background: #F0FDF4; color: #15803d; } .s-confirmed::before { background: var(--green); }
+    .s-active { background: #FFFBEB; color: #b45309; } .s-active::before { background: var(--brand); }
+    .s-completed { background: #F3F4F6; color: var(--muted); } .s-completed::before { background: var(--muted); }
+    .s-cancelled { background: #FEF2F2; color: var(--red); } .s-cancelled::before { background: var(--red); }
+
+    .ab { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat',sans-serif; transition: all .2s; }
+    .ab.ok { background: #F0FDF4; color: #15803d; } .ab.ok:hover { background: var(--green); color: #fff; }
+    .ab.no { background: #FEF2F2; color: var(--red); } .ab.no:hover { background: var(--red); color: #fff; }
+    .ab.vi { background: #EFF6FF; color: var(--blue); } .ab.vi:hover { background: var(--blue); color: #fff; }
+    .ab.gr { background: #F3F4F6; color: var(--muted); } .ab.gr:hover { background: var(--muted); color: #fff; }
+    .ab.dl { background: #FEF2F2; color: var(--red); } .ab.dl:hover { background: var(--red); color: #fff; }
+    .acts { display: flex; gap: 6px; }
+
+    .fleet-adm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .fac { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .fac-img { background: var(--card-bg); height: 120px; display: grid; place-items: center; font-size: 54px; position: relative; }
+    .fac-img .fac-st { position: absolute; top: 10px; right: 10px; }
+    .fac-body { padding: 14px; }
+    .fac-body h4 { font-size: 15px; font-weight: 700; margin-bottom: 2px; font-family:'Montserrat',sans-serif; }
+    .fac-body .ftype { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .fac-body .fprice { font-size: 20px; font-weight: 800; color: var(--brand); font-family: 'Montserrat',sans-serif; }
+    .fac-body .fprice span { font-size: 12px; color: var(--muted); font-weight: 400; }
+    .toggle-wrap { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 13px; font-weight: 600; }
+    .toggle { position: relative; width: 44px; height: 24px; background: #ddd; border-radius: 12px; cursor: pointer; transition: background .2s; border: none; flex-shrink: 0; }
+    .toggle.on { background: var(--green); }
+    .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
+    .toggle.on::after { transform: translateX(20px); }
+
+    .filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-bar input, .filter-bar select { border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; font-size: 13px; font-family: 'Lato',sans-serif; outline: none; transition: border-color .2s; }
+    .filter-bar input:focus, .filter-bar select:focus { border-color: var(--brand); }
+    .filter-bar input { flex: 1; min-width: 200px; }
+
+    .det-row { display: flex; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .det-row:last-child { border-bottom: none; }
+    .det-lbl { font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .3px; width: 130px; flex-shrink: 0; padding-top: 1px; }
+
+    /* ── LOGIN ── */
+    .login-ov { position: fixed; inset: 0; background: linear-gradient(135deg,#1a1a2e 0%,#16213e 100%); display: none; place-items: center; z-index: 500; }
+    .login-ov.show { display: grid; }
+    .login-box { background: #fff; border-radius: 20px; padding: 44px 40px; width: 380px; text-align: center; }
+    .login-ico { font-size: 48px; margin-bottom: 16px; }
+    .login-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .login-box p { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+    .lf { text-align: left; margin-bottom: 16px; }
+    .lf label { font-size: 12px; font-weight: 700; font-family: 'Montserrat',sans-serif; display: block; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
+    .lf input { width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: 'Lato',sans-serif; outline: none; transition: border-color .2s; }
+    .lf input:focus { border-color: var(--brand); }
+    .lerr { font-size: 13px; color: var(--red); font-weight: 600; margin-bottom: 12px; display: none; }
+    .lhint { font-size: 12px; color: var(--muted); margin-top: 16px; }
+
+    /* ── MODAL ── */
+    .modal-ov { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 1000; place-items: center; padding: 20px; }
+    .modal-ov.open { display: grid; }
+    .modal { background: #fff; border-radius: 20px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 36px 32px; position: relative; animation: mIn .25s ease; }
+    @keyframes mIn { from{opacity:0;transform:translateY(-20px) scale(.97)} to{opacity:1;transform:none} }
+    .modal-x { position: absolute; top: 16px; right: 16px; background: var(--card-bg); border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; cursor: pointer; display: grid; place-items: center; }
+    .modal h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .modal .msub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    /* ── CALENDAR ── */
+    .cal-day { border: 1px solid var(--border); border-radius: 8px; padding: 6px; min-height: 60px; }
+    .cal-res-pill { font-size: 10px; background: var(--brand); color: #fff; border-radius: 4px; padding: 1px 4px; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ── TOAST ── */
+    .toast { display: none; position: fixed; bottom: 30px; right: 30px; color: #fff; padding: 14px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 2000; animation: fUp .3s ease; max-width: 360px; line-height: 1.4; }
+    .toast.show { display: block; }
+    .toast.success { background: #1a1a1a; }
+    .toast.error { background: var(--red); }
+    @keyframes fUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); }
+    .fl { display: flex; align-items: center; gap: 10px; }
+    .flinks { display: flex; gap: 20px; }
+    .flinks a { color: var(--muted); text-decoration: none; cursor: pointer; }
+    .flinks a:hover { color: var(--text); }
+
+    @media(max-width:900px){
+      header{padding:12px 16px;} nav{display:none;}
+      .hero{margin:16px;padding:36px 24px;} .stats{grid-template-columns:repeat(2,1fr);margin:16px;}
+      .why-section{margin:10px 16px 40px;} .why-grid{grid-template-columns:1fr;}
+      .page-header{padding:28px 16px 16px;} .fleet-grid{grid-template-columns:1fr 1fr;padding:0 16px 40px;}
+      .cennik-grid{grid-template-columns:1fr;padding:0 16px 20px;} .inc-box{margin:0 16px 40px;} .inc-grid{grid-template-columns:1fr;}
+      .about-grid{grid-template-columns:1fr;padding:0 16px 20px;} .about-stats{grid-template-columns:repeat(2,1fr);margin:0 16px 40px;}
+      .rez-grid{grid-template-columns:1fr;padding:0 16px 40px;}
+      footer{flex-direction:column;gap:16px;text-align:center;padding:20px 16px;}
+      .admin-layout{grid-template-columns:1fr;} .admin-sidebar{position:relative;height:auto;}
+      .kpi-grid{grid-template-columns:repeat(2,1fr);} .fleet-adm-grid{grid-template-columns:repeat(2,1fr);}
+    }
+    @media(max-width:600px){ .fleet-grid{grid-template-columns:1fr;} .fleet-adm-grid{grid-template-columns:1fr;} .kpi-grid{grid-template-columns:1fr 1fr;} }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo" onclick="showPage('home')">
+    <div class="logo-icon">BC</div>
+    <div><div class="logo-name">Bibi Car</div><div class="logo-sub">Wypożyczalnia Aut</div></div>
+  </a>
+  <nav id="main-nav">
+    <a class="active" onclick="showPage('home')">🏠 Strona główna</a>
+    <a onclick="showPage('flota')">🏎️ Nasza flota</a>
+    <a onclick="showPage('cennik')">💰 Cennik</a>
+    <a onclick="showPage('onas')">ℹ️ O nas</a>
+    <a onclick="showPage('rezerwacja')">📋 Rezerwacja</a>
+  </nav>
+  <div class="header-right">
+    <div class="header-contact"><strong>+48 123 456 789</strong><span>kontakt@bibicar.pl</span></div>
+    <button class="btn-admin-tog" id="adminBtn" onclick="openAdminLogin()">🔒 Admin</button>
+    <button class="btn-primary" onclick="openModal()">Zarezerwuj</button>
+  </div>
+</header>
+
+<!-- PAGE: HOME -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-badge">🏆 Najlepsza cena w mieście</div>
+    <h1>Tanie auta, niezawodne jak rock</h1>
+    <p>Wypożycz samochód od <strong>49 zł/dzień</strong>. Bez ukrytych opłat, bez zaskoczeń. Proste, uczciwe i dostępne dla każdego.</p>
+    <div class="hero-btns">
+      <button class="btn-white" onclick="showPage('flota')">Pokaż nam auta →</button>
+      <button class="btn-outline" onclick="openModal()">Zarezerwuj teraz</button>
+    </div>
+  </section>
+  <div class="stats">
+    <div class="stat-card"><div class="stat-number">500<sup>+</sup></div><div class="stat-label">Zadowolonych klientów</div></div>
+    <div class="stat-card"><div class="stat-number">12<sup>+</sup></div><div class="stat-label">Lat doświadczenia</div></div>
+    <div class="stat-card"><div class="stat-number">50<sup>+</sup></div><div class="stat-label">Samochodów</div></div>
+    <div class="stat-card"><div class="stat-number">4.9</div><div class="stat-label">Ocena na Mapach</div></div>
+  </div>
+  <section class="why-section">
+    <h2>Dlaczego my?</h2>
+    <div class="why-grid">
+      <div class="why-card"><div class="why-icon">💵</div><h3>Super ceny</h3><p>Najtaniej w okolicy. Nie ma tanszej. Gwarantujemy!</p></div>
+      <div class="why-card"><div class="why-icon">✅</div><h3>Auto w dobry stan</h3><p>Wszystkie samochody przeglądane i sprawdzane każdego dnia.</p></div>
+      <div class="why-card"><div class="why-icon">⚡</div><h3>Szybko i łatwo</h3><p>Rezerwacja przez telefon lub online. Bez papierkologii!</p></div>
+    </div>
+  </section>
+  <footer><div class="fl"><div class="logo-icon" style="width:32px;height:32px;font-size:12px;">BC</div><strong style="font-family:'Montserrat',sans-serif;">Bibi Car</strong></div><span>© 2024 Bibi Car. Wszystkie prawa zastrzeżone.</span><div class="flinks"><a href="#">Polityka prywatności</a><a href="#">Regulamin</a><a onclick="showPage('rezerwacja')">Kontakt</a></div></footer>
+</div>
+
+<!-- PAGE: FLOTA -->
+<div id="page-flota" class="page">
+  <div class="page-header"><h1>Nasza flota</h1><p>Auta na każdą okazję – od kompaktu do vana.</p></div>
+  <div class="fleet-grid" id="public-fleet"></div>
+  <footer><div class="fl"><div class="logo-icon" style="width:32px;height:32px;font-size:12px;">BC</div><strong style="font-family:'Montserrat',sans-serif;">Bibi Car</strong></div><span>© 2024 Bibi Car. Wszystkie prawa zastrzeżone.</span><div class="flinks"><a href="#">Polityka prywatności</a><a href="#">Regulamin</a><a onclick="showPage('rezerwacja')">Kontakt</a></div></footer>
+</div>
+
+<!-- PAGE: CENNIK -->
+<div id="page-cennik" class="page">
+  <div class="page-header"><h1>Cennik</h1><p>Przejrzyste ceny. Bez ukrytych opłat.</p></div>
+  <div class="cennik-grid">
+    <div class="price-card"><h3>Klasa Ekonomiczna</h3><div class="sub">Fiat 500, Opel Corsa</div><div class="price-row"><span>1 dzień</span><span class="val">49 zł</span></div><div class="price-row"><span>Weekend</span><span class="val">129 zł</span></div><div class="price-row"><span>7 dni</span><span class="val">299 zł</span></div><div class="price-row"><span>30 dni</span><span class="val">999 zł</span></div></div>
+    <div class="price-card featured"><div class="feat-badge">NAJPOPULARNIEJSZY</div><h3>Klasa Komfort</h3><div class="sub">Toyota Corolla, Škoda Octavia</div><div class="price-row"><span>1 dzień</span><span class="val">79 zł</span></div><div class="price-row"><span>Weekend</span><span class="val">199 zł</span></div><div class="price-row"><span>7 dni</span><span class="val">449 zł</span></div><div class="price-row"><span>30 dni</span><span class="val">1499 zł</span></div></div>
+    <div class="price-card"><h3>Vany i Dostawcze</h3><div class="sub">Ford Transit, Mercedes Sprinter</div><div class="price-row"><span>1 dzień</span><span class="val">129 zł</span></div><div class="price-row"><span>Weekend</span><span class="val">299 zł</span></div><div class="price-row"><span>7 dni</span><span class="val">699 zł</span></div><div class="price-row"><span>30 dni</span><span class="val">2199 zł</span></div></div>
+  </div>
+  <div class="inc-box"><h3>Co masz w cenie?</h3><div class="inc-grid"><div class="inc-item">Ubezpieczenie OC/AC</div><div class="inc-item">Pomoc drogowa 24/7</div><div class="inc-item">Limit 300 km/dzień</div><div class="inc-item">Kaucja zwrotna 500 zł</div><div class="inc-item">Fotelik dziecięcy +20 zł</div><div class="inc-item">Drugi kierowca +30 zł</div></div></div>
+  <footer><div class="fl"><div class="logo-icon" style="width:32px;height:32px;font-size:12px;">BC</div><strong style="font-family:'Montserrat',sans-serif;">Bibi Car</strong></div><span>© 2024 Bibi Car. Wszystkie prawa zastrzeżone.</span><div class="flinks"><a href="#">Polityka prywatności</a><a href="#">Regulamin</a><a onclick="showPage('rezerwacja')">Kontakt</a></div></footer>
+</div>
+
+<!-- PAGE: O NAS -->
+<div id="page-onas" class="page">
+  <div class="page-header"><h1>O nas</h1><p>Poznaj historię Bibi Car.</p></div>
+  <div class="about-grid">
+    <div><h3>Nasza historia</h3><p>Bibi Car to rodzinna wypożyczalnia aut, która działa na rynku od 2012 roku. Zaczynaliśmy z zaledwie 3 samochodami na małym parkingu.</p><p>Dziś posiadamy flotę 50+ pojazdów i obsługujemy kilkadziesiąt rezerwacji każdego miesiąca. Naszą siłą jest szczerość i profesjonalizm.</p><p>Wiemy, że pieniądze są ważne. Dlatego oferujemy najlepsze ceny w mieście bez poświęcania jakości.</p></div>
+    <div><h3>Czemu warto nas wybrać?</h3><ul class="about-list"><li>Transparentne ceny – brak zaskoczeń</li><li>Samochody w doskonałym stanie</li><li>Szybka rezerwacja – sama przez telefon</li><li>Pomoc 24/7 – zawsze jesteśmy dostępni</li><li>Zaufani przez tysiące kierowców</li></ul></div>
+  </div>
+  <div class="about-stats">
+    <div class="stat-card"><div class="stat-number">12<sup>+</sup></div><div class="stat-label">Lat działalności</div></div>
+    <div class="stat-card"><div class="stat-number">500<sup>+</sup></div><div class="stat-label">Zadowolonych klientów</div></div>
+    <div class="stat-card"><div class="stat-number">50<sup>+</sup></div><div class="stat-label">Samochodów w flocie</div></div>
+    <div class="stat-card"><div class="stat-number">4.9</div><div class="stat-label">⭐ Ocena Google</div></div>
+  </div>
+  <footer><div class="fl"><div class="logo-icon" style="width:32px;height:32px;font-size:12px;">BC</div><strong style="font-family:'Montserrat',sans-serif;">Bibi Car</strong></div><span>© 2024 Bibi Car. Wszystkie prawa zastrzeżone.</span><div class="flinks"><a href="#">Polityka prywatności</a><a href="#">Regulamin</a><a onclick="showPage('rezerwacja')">Kontakt</a></div></footer>
+</div>
+
+<!-- PAGE: REZERWACJA -->
+<div id="page-rezerwacja" class="page">
+  <div class="page-header"><h1>Zarezerwuj auto</h1><p>Szybko, bezpiecznie i bez komplikacji.</p></div>
+  <div class="rez-grid">
+    <div class="contact-card">
+      <h3>Skontaktuj się z nami</h3>
+      <div class="c-item"><div class="c-ico">📍</div><div><div class="c-label">Adres</div><div class="c-val">ul. Motorowa 15</div><div class="c-sub">00-001 Warszawa</div></div></div>
+      <div class="c-item"><div class="c-ico">📞</div><div><div class="c-label">Telefon</div><div class="c-val">+48 123 456 789</div></div></div>
+      <div class="c-item"><div class="c-ico">✉️</div><div><div class="c-label">Email</div><div class="c-val">kontakt@bibicar.pl</div></div></div>
+      <div class="c-item"><div class="c-ico">🕐</div><div><div class="c-label">Godziny</div><div class="c-val">Codziennie 8:00–20:00</div><div class="c-sub">Emergencja 24/7</div></div></div>
+    </div>
+    <div class="form-card">
+      <h3>Szybka rezerwacja</h3>
+      <form id="pageForm" onsubmit="submitPageForm(event)">
+        <div class="fg"><label>Imię i nazwisko *</label><input type="text" id="pf-name" placeholder="Jan Kowalski" required /></div>
+        <div class="fg"><label>Telefon *</label><input type="tel" id="pf-phone" placeholder="+48 XXX XXX XXX" required /></div>
+        <div class="fg"><label>Email *</label><input type="email" id="pf-email" placeholder="jan@example.com" required /></div>
+        <div class="form-row2">
+          <div class="fg"><label>Od *</label><input type="date" id="pf-from" required /></div>
+          <div class="fg"><label>Do *</label><input type="date" id="pf-to" required /></div>
+        </div>
+        <div class="fg"><label>Jaki samochód? *</label><select id="pf-car" required><option value="">– Wybierz samochód –</option></select></div>
+        <div class="fg"><label>Dodatkowe uwagi</label><textarea id="pf-notes" placeholder="Np. fotelik dziecięcy, drugi kierowca..."></textarea></div>
+        <button type="submit" class="btn-sub">Wyślij rezerwację →</button>
+      </form>
+    </div>
+  </div>
+  <footer><div class="fl"><div class="logo-icon" style="width:32px;height:32px;font-size:12px;">BC</div><strong style="font-family:'Montserrat',sans-serif;">Bibi Car</strong></div><span>© 2024 Bibi Car. Wszystkie prawa zastrzeżone.</span><div class="flinks"><a href="#">Polityka prywatności</a><a href="#">Regulamin</a><a href="#">Kontakt</a></div></footer>
+</div>
+
+<!-- PAGE: ADMIN -->
+<div id="page-admin" class="page">
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="adm-sid-hdr">
+        <p>Panel admina</p>
+        <strong>Bibi Car</strong>
+      </div>
+      <nav class="adm-nav">
+        <a class="active" onclick="showAdmPage('dash')"><span class="ni">📊</span>Dashboard</a>
+        <a onclick="showAdmPage('res')"><span class="ni">📋</span>Rezerwacje<span class="nbadge" id="newBadge">0</span></a>
+        <a onclick="showAdmPage('fleet')"><span class="ni">🚗</span>Flota</a>
+        <a onclick="showAdmPage('cal')"><span class="ni">📅</span>Kalendarz</a>
+        <a onclick="showAdmPage('clients')"><span class="ni">👥</span>Klienci</a>
+        <a onclick="showAdmPage('settings')"><span class="ni">⚙️</span>Ustawienia</a>
+      </nav>
+      <div class="adm-foot"><button class="btn-logout" onclick="logoutAdmin()">🚪 Wyloguj się</button></div>
+    </aside>
+
+    <main class="adm-content">
+      <!-- DASHBOARD -->
+      <div id="adm-dash" class="adm-page active">
+        <div class="adm-title">Dashboard</div>
+        <div class="adm-sub">Przegląd działalności</div>
+        <div class="kpi-grid">
+          <div class="kpi y"><div class="kpi-ico">📋</div><div class="kpi-val" id="kpi-tot">0</div><div class="kpi-lbl">Wszystkich rezerwacji</div></div>
+          <div class="kpi g"><div class="kpi-ico">✅</div><div class="kpi-val" id="kpi-con">0</div><div class="kpi-lbl">Potwierdzonych</div></div>
+          <div class="kpi b"><div class="kpi-ico">🔔</div><div class="kpi-val" id="kpi-new">0</div><div class="kpi-lbl">Nowych (oczekuje)</div></div>
+          <div class="kpi r"><div class="kpi-ico">💰</div><div class="kpi-val" id="kpi-rev">0 zł</div><div class="kpi-lbl">Szacowany przychód</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;">
+          <div class="adm-card">
+            <div class="adm-card-hdr"><div><h3>Ostatnie rezerwacje</h3><p>5 najnowszych zgłoszeń</p></div><button class="ab vi" onclick="showAdmPage('res')">Wszystkie</button></div>
+            <table><thead><tr><th>Klient</th><th>Auto</th><th>Od</th><th>Status</th></tr></thead><tbody id="dash-recent"></tbody></table>
+          </div>
+          <div class="adm-card" style="padding:22px;">
+            <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">Dostępność floty</h3>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:18px;">Status samochodów</p>
+            <div id="fleet-avail"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESERVATIONS -->
+      <div id="adm-res" class="adm-page">
+        <div class="adm-title">Rezerwacje</div>
+        <div class="adm-sub">Zarządzaj rezerwacjami klientów</div>
+        <div class="filter-bar">
+          <input type="text" id="rs-search" placeholder="🔍 Szukaj klienta, auta…" oninput="renderResTable()" />
+          <select id="rs-status" onchange="renderResTable()"><option value="">Wszystkie statusy</option><option value="new">Nowe</option><option value="confirmed">Potwierdzone</option><option value="active">Aktywne</option><option value="completed">Zakończone</option><option value="cancelled">Anulowane</option></select>
+          <select id="rs-car" onchange="renderResTable()"><option value="">Wszystkie auta</option></select>
+          <button class="ab vi" onclick="exportCSV()">⬇️ Eksport CSV</button>
+        </div>
+        <div class="adm-card">
+          <div class="adm-card-hdr"><div><h3>Lista rezerwacji</h3><p id="res-cnt">Łącznie: 0</p></div></div>
+          <table><thead><tr><th>#</th><th>Klient</th><th>Tel</th><th>Auto</th><th>Od</th><th>Do</th><th>Dni</th><th>Kwota</th><th>Status</th><th>Akcje</th></tr></thead><tbody id="res-tbody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- FLEET -->
+      <div id="adm-fleet" class="adm-page">
+        <div class="adm-title">Flota</div>
+        <div class="adm-sub">Zarządzaj dostępnością samochodów</div>
+        <div class="fleet-adm-grid" id="adm-fleet-grid"></div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div id="adm-cal" class="adm-page">
+        <div class="adm-title">Kalendarz rezerwacji</div>
+        <div class="adm-sub">Widok miesięczny</div>
+        <div class="adm-card" style="padding:24px;">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            <button class="ab vi" onclick="calPrev()">← Poprzedni</button>
+            <h3 id="cal-title" style="font-size:18px;font-weight:800;flex:1;text-align:center;font-family:'Montserrat',sans-serif;"></h3>
+            <button class="ab vi" onclick="calNext()">Następny →</button>
+          </div>
+          <div id="cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;"></div>
+        </div>
+      </div>
+
+      <!-- CLIENTS -->
+      <div id="adm-clients" class="adm-page">
+        <div class="adm-title">Klienci</div>
+        <div class="adm-sub">Baza klientów z historią rezerwacji</div>
+        <div class="adm-card"><div class="adm-card-hdr"><div><h3>Baza klientów</h3></div></div><table><thead><tr><th>Klient</th><th>Email</th><th>Telefon</th><th>Rezerwacje</th><th>Ostatnia</th><th>Łącznie</th></tr></thead><tbody id="clients-tbody"></tbody></table></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div id="adm-settings" class="adm-page">
+        <div class="adm-title">Ustawienia</div>
+        <div class="adm-sub">Konfiguracja systemu</div>
+        <div class="adm-card" style="padding:28px;max-width:560px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:20px;">Dane firmy</h3>
+          <div class="fg"><label>Nazwa firmy</label><input id="s-co" value="Bibi Car" /></div>
+          <div class="fg"><label>Telefon</label><input id="s-ph" value="+48 123 456 789" /></div>
+          <div class="fg"><label>Email</label><input id="s-em" value="kontakt@bibicar.pl" /></div>
+          <div class="fg"><label>Adres</label><input id="s-ad" value="ul. Motorowa 15, 00-001 Warszawa" /></div>
+          <button class="btn-sub" style="width:auto;padding:12px 28px;font-size:14px;" onclick="showToast('Ustawienia zapisane!','success')">Zapisz</button>
+        </div>
+        <div class="adm-card" style="padding:28px;max-width:560px;margin-top:20px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Zmień hasło administratora</h3>
+          <div class="fg"><label>Nowe hasło</label><input type="password" id="s-np" placeholder="Min. 4 znaki" /></div>
+          <div class="fg"><label>Potwierdź hasło</label><input type="password" id="s-cp" placeholder="Powtórz hasło" /></div>
+          <button class="btn-sub" style="width:auto;padding:12px 28px;font-size:14px;" onclick="changePass()">Zmień hasło</button>
+        </div>
+        <div class="adm-card" style="padding:28px;max-width:560px;margin-top:20px;">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:10px;">Dane testowe</h3>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Wygeneruj przykładowe rezerwacje do testów.</p>
+          <div style="display:flex;gap:10px;">
+            <button class="ab ok" onclick="seedData()">🔧 Generuj dane testowe</button>
+            <button class="ab no" onclick="clearAll()">🗑 Wyczyść wszystko</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-ov" id="loginOv">
+  <div class="login-box">
+    <div class="login-ico">🔑</div>
+    <h2>Panel Administratora</h2>
+    <p>Zaloguj się, aby zarządzać systemem</p>
+    <div class="lf"><label>Login</label><input id="l-user" value="admin" /></div>
+    <div class="lf"><label>Hasło</label><input type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+    <div class="lerr" id="l-err">❌ Błędny login lub hasło</div>
+    <button class="btn-sub" onclick="doLogin()">Zaloguj się</button>
+    <button class="btn-white" style="width:100%;margin-top:10px;padding:12px;cursor:pointer;" onclick="document.getElementById('loginOv').classList.remove('show')">Anuluj</button>
+    <div class="lhint">Domyślne dane: <strong>admin</strong> / <strong>admin123</strong></div>
+  </div>
+</div>
+
+<!-- RESERVATION MODAL -->
+<div class="modal-ov" id="modalOv" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <h2>Zarezerwuj auto</h2>
+    <p class="msub">Szybko, bezpiecznie i bez komplikacji.</p>
+    <form onsubmit="submitModalForm(event)">
+      <div class="fg"><label>Imię i nazwisko *</label><input id="mf-name" placeholder="Jan Kowalski" required /></div>
+      <div class="fg"><label>Telefon *</label><input type="tel" id="mf-phone" placeholder="+48 XXX XXX XXX" required /></div>
+      <div class="fg"><label>Email *</label><input type="email" id="mf-email" placeholder="jan@example.com" required /></div>
+      <div class="form-row2">
+        <div class="fg"><label>Od *</label><input type="date" id="mf-from" required /></div>
+        <div class="fg"><label>Do *</label><input type="date" id="mf-to" required /></div>
+      </div>
+      <div class="fg"><label>Jaki samochód? *</label><select id="mf-car" required><option value="">– Wybierz samochód –</option></select></div>
+      <div class="fg"><label>Dodatkowe uwagi</label><textarea id="mf-notes" placeholder="Np. fotelik dziecięcy, drugi kierowca..."></textarea></div>
+      <button type="submit" class="btn-sub">Wyślij rezerwację →</button>
+    </form>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-ov" id="detailOv" onclick="if(event.target===this)closeDetail()">
+  <div class="modal" style="max-width:500px;">
+    <button class="modal-x" onclick="closeDetail()">✕</button>
+    <h2 id="det-title"></h2>
+    <p class="msub" id="det-sub"></p>
+    <div id="det-body"></div>
+    <div style="display:flex;gap:8px;margin-top:20px;" id="det-acts"></div>
+  </div>
+</div>
+
+<div class="toast success" id="toast"></div>
+
+<script>
+/* ── DATA ── */
+const CARS_DEFAULT = [
+  {id:1,name:'Fiat 500',type:'Ekonomiczny • Miejski',price:49,emoji:'🚗',available:true},
+  {id:2,name:'Toyota Corolla',type:'Komfortowy • Niezawodny',price:79,emoji:'🚙',available:true},
+  {id:3,name:'Opel Astra',type:'Sportowy • Oszczędny',price:59,emoji:'🚘',available:true},
+  {id:4,name:'Škoda Octavia',type:'Przestronny • Premium',price:89,emoji:'🚕',available:true},
+  {id:5,name:'Ford Transit',type:'Van • Dostawczy',price:129,emoji:'🚐',available:true},
+  {id:6,name:'VW Passat',type:'Elegancki • Biznesowy',price:119,emoji:'🚌',available:true},
+];
+const SL = {new:{l:'Nowe',c:'s-new'},confirmed:{l:'Potwierdzone',c:'s-confirmed'},active:{l:'Aktywne',c:'s-active'},completed:{l:'Zakończone',c:'s-completed'},cancelled:{l:'Anulowane',c:'s-cancelled'}};
+
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+const getRes=()=>ld('bibi_res',[]);
+const svRes=r=>sv('bibi_res',r);
+const getCars=()=>ld('bibi_cars',CARS_DEFAULT);
+const svCars=c=>sv('bibi_cars',c);
+const getPass=()=>ld('bibi_pass','admin123');
+const isLoggedIn=()=>sessionStorage.getItem('bibi_adm')==='1';
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  fillCarSelects();
+  renderPublicFleet();
+  setMinDates();
+});
+function setMinDates(){
+  const t=new Date().toISOString().split('T')[0];
+  ['mf-from','mf-to','pf-from','pf-to'].forEach(id=>{const e=document.getElementById(id);if(e)e.min=t;});
+}
+
+/* ── FILL CAR SELECTS ── */
+function fillCarSelects(){
+  const cars=getCars().filter(c=>c.available);
+  const opts=cars.map(c=>`<option value="${c.name}">${c.name} – ${c.price} zł/dzień</option>`).join('');
+  ['mf-car','pf-car'].forEach(id=>{const e=document.getElementById(id);if(e)e.innerHTML='<option value="">– Wybierz samochód –</option>'+opts;});
+  const rs=document.getElementById('rs-car');
+  if(rs){rs.innerHTML='<option value="">Wszystkie auta</option>'+getCars().map(c=>`<option value="${c.name}">${c.name}</option>`).join('');}
+}
+
+/* ── PUBLIC FLEET ── */
+function renderPublicFleet(){
+  const g=document.getElementById('public-fleet');if(!g)return;
+  g.innerHTML=getCars().map(c=>`
+    <div class="car-card">
+      <div class="car-img-area">${c.emoji}</div>
+      <div class="car-info">
+        <div class="car-top"><div class="car-name">${c.name}</div><span class="${c.available?'badge-av':'badge-unav'}">${c.available?'Dostępny':'Niedostępny'}</span></div>
+        <div class="car-type">${c.type}</div>
+        <div class="car-bottom">
+          <div class="car-price">${c.price} zł <span>/dzień</span></div>
+          ${c.available?`<button class="btn-primary" onclick="openModal('${c.name}')">Zarezerwuj</button>`:`<button class="btn-primary" style="opacity:.4;cursor:not-allowed" disabled>Niedostępny</button>`}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ── PAGE ROUTER ── */
+const PUB=['home','flota','cennik','onas','rezerwacja'];
+function showPage(id){
+  if(id==='admin'&&!isLoggedIn()){openAdminLogin();return;}
+  PUB.concat(['admin']).forEach(p=>document.getElementById('page-'+p).classList.toggle('active',p===id));
+  const nm={home:0,flota:1,cennik:2,onas:3,rezerwacja:4};
+  document.querySelectorAll('#main-nav a').forEach((a,i)=>a.classList.toggle('active',i===nm[id]));
+  const btn=document.getElementById('adminBtn');
+  if(id==='admin'){btn.classList.add('on');refreshAdmin();}else{btn.classList.remove('on');}
+  if(id==='flota'||id==='rezerwacja'){fillCarSelects();}
+  if(id==='flota')renderPublicFleet();
+  window.scrollTo(0,0);
+}
+
+/* ── ADMIN AUTH ── */
+function openAdminLogin(){
+  if(isLoggedIn()){showPage('admin');return;}
+  document.getElementById('loginOv').classList.add('show');
+  document.getElementById('l-err').style.display='none';
+  document.getElementById('l-pass').value='';
+  setTimeout(()=>document.getElementById('l-pass').focus(),100);
+}
+function doLogin(){
+  const u=document.getElementById('l-user').value.trim();
+  const p=document.getElementById('l-pass').value;
+  if(u==='admin'&&p===getPass()){
+    sessionStorage.setItem('bibi_adm','1');
+    document.getElementById('loginOv').classList.remove('show');
+    document.getElementById('adminBtn').textContent='⚙️ Admin';
+    showPage('admin');
+  } else {
+    document.getElementById('l-err').style.display='block';
+    document.getElementById('l-pass').value='';
+    document.getElementById('l-pass').focus();
+  }
+}
+function logoutAdmin(){
+  sessionStorage.removeItem('bibi_adm');
+  document.getElementById('adminBtn').textContent='🔒 Admin';
+  showPage('home');
+  showToast('Wylogowano z panelu administratora','success');
+}
+
+/* ── ADMIN PAGES ── */
+const ADM_PAGES=['dash','res','fleet','cal','clients','settings'];
+function showAdmPage(id){
+  ADM_PAGES.forEach(p=>document.getElementById('adm-'+p).classList.toggle('active',p===id));
+  document.querySelectorAll('.adm-nav a').forEach((a,i)=>a.classList.toggle('active',ADM_PAGES[i]===id));
+  if(id==='dash')refreshDash();
+  if(id==='res')renderResTable();
+  if(id==='fleet')renderAdmFleet();
+  if(id==='cal')renderCal();
+  if(id==='clients')renderClients();
+}
+function refreshAdmin(){
+  showAdmPage(ADM_PAGES.find(p=>document.getElementById('adm-'+p).classList.contains('active'))||'dash');
+  updateBadge();
+}
+
+/* ── DASHBOARD ── */
+function refreshDash(){
+  const res=getRes(),cars=getCars();
+  document.getElementById('kpi-tot').textContent=res.length;
+  document.getElementById('kpi-con').textContent=res.filter(r=>['confirmed','active'].includes(r.status)).length;
+  const nw=res.filter(r=>r.status==='new').length;
+  document.getElementById('kpi-new').textContent=nw;
+  document.getElementById('kpi-rev').textContent=res.filter(r=>r.status!=='cancelled').reduce((s,r)=>s+(r.total||0),0).toLocaleString('pl-PL')+' zł';
+  // recent
+  const recent=[...res].sort((a,b)=>b.id-a.id).slice(0,5);
+  document.getElementById('dash-recent').innerHTML=recent.length?recent.map(r=>`<tr><td><strong>${r.name}</strong></td><td>${r.car}</td><td>${r.from}</td><td><span class="sbadge ${SL[r.status].c}">${SL[r.status].l}</span></td></tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px;">Brak rezerwacji</td></tr>';
+  // avail
+  document.getElementById('fleet-avail').innerHTML=cars.map(c=>{
+    const act=res.filter(r=>r.car===c.name&&['confirmed','active'].includes(r.status)).length;
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span style="width:20px;text-align:center;">${c.emoji}</span>
+      <div style="flex:1;background:#f0f0f0;border-radius:6px;height:8px;">
+        <div style="width:${c.available?Math.min(act*20,100):0}%;background:var(--brand);border-radius:6px;height:8px;"></div>
+      </div>
+      <span style="font-size:12px;color:var(--muted);width:60px;">${c.name.split(' ')[0]}</span>
+      <span class="sbadge ${c.available?'s-confirmed':'s-cancelled'}" style="font-size:10px;">${c.available?'OK':'Off'}</span>
+    </div>`;
+  }).join('');
+  updateBadge();
+}
+
+function updateBadge(){
+  const n=getRes().filter(r=>r.status==='new').length;
+  const b=document.getElementById('newBadge');
+  b.textContent=n;b.style.display=n?'inline':'none';
+}
+
+/* ── RESERVATIONS TABLE ── */
+function renderResTable(){
+  const res=getRes();
+  const search=(document.getElementById('rs-search')?.value||'').toLowerCase();
+  const fStatus=document.getElementById('rs-status')?.value||'';
+  const fCar=document.getElementById('rs-car')?.value||'';
+  // fill car filter once
+  const rs=document.getElementById('rs-car');
+  if(rs&&rs.options.length<=1){getCars().forEach(c=>{const o=document.createElement('option');o.value=c.name;o.textContent=c.name;rs.appendChild(o);});}
+  let rows=[...res].sort((a,b)=>b.id-a.id);
+  if(search)rows=rows.filter(r=>r.name.toLowerCase().includes(search)||r.email.toLowerCase().includes(search)||r.phone.includes(search)||r.car.toLowerCase().includes(search));
+  if(fStatus)rows=rows.filter(r=>r.status===fStatus);
+  if(fCar)rows=rows.filter(r=>r.car===fCar);
+  document.getElementById('res-cnt').textContent='Łącznie: '+rows.length;
+  const tb=document.getElementById('res-tbody');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:32px;">Brak wyników</td></tr>';return;}
+  tb.innerHTML=rows.map(r=>{
+    const days=calcDays(r.from,r.to);
+    return `<tr>
+      <td style="color:var(--muted);font-size:12px;">#${r.id}</td>
+      <td><strong>${r.name}</strong></td>
+      <td style="color:var(--muted);font-size:13px;">${r.phone}</td>
+      <td>${r.car}</td>
+      <td>${r.from}</td>
+      <td>${r.to}</td>
+      <td style="text-align:center;">${days}</td>
+      <td style="font-weight:700;color:var(--brand);">${(r.total||0).toLocaleString('pl-PL')} zł</td>
+      <td><span class="sbadge ${SL[r.status].c}">${SL[r.status].l}</span></td>
+      <td><div class="acts">
+        <button class="ab vi" onclick="viewRes(${r.id})" title="Szczegóły">👁</button>
+        ${r.status==='new'?`<button class="ab ok" onclick="setStatus(${r.id},'confirmed')">✓</button>`:''}
+        ${r.status==='confirmed'?`<button class="ab gr" onclick="setStatus(${r.id},'active')">▶</button>`:''}
+        ${r.status==='active'?`<button class="ab gr" onclick="setStatus(${r.id},'completed')">■</button>`:''}
+        ${['new','confirmed'].includes(r.status)?`<button class="ab no" onclick="setStatus(${r.id},'cancelled')">✕</button>`:''}
+        <button class="ab dl" onclick="delRes(${r.id})" title="Usuń">🗑</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function setStatus(id,status){
+  const res=getRes(),idx=res.findIndex(r=>r.id===id);
+  if(idx===-1)return;
+  res[idx].status=status;svRes(res);
+  renderResTable();updateBadge();refreshDash();
+  showToast('Status: '+SL[status].l,'success');
+}
+function delRes(id){
+  if(!confirm('Usunąć tę rezerwację?'))return;
+  svRes(getRes().filter(r=>r.id!==id));
+  renderResTable();updateBadge();refreshDash();
+  showToast('Rezerwacja usunięta','success');
+}
+function viewRes(id){
+  const r=getRes().find(r=>r.id===id);if(!r)return;
+  const d=calcDays(r.from,r.to);
+  document.getElementById('det-title').textContent=`Rezerwacja #${r.id}`;
+  document.getElementById('det-sub').textContent='Złożona: '+(r.created||'–');
+  document.getElementById('det-body').innerHTML=`
+    <div class="det-row"><span class="det-lbl">Klient</span><span>${r.name}</span></div>
+    <div class="det-row"><span class="det-lbl">Telefon</span><span>${r.phone}</span></div>
+    <div class="det-row"><span class="det-lbl">Email</span><span>${r.email}</span></div>
+    <div class="det-row"><span class="det-lbl">Samochód</span><span>${r.car}</span></div>
+    <div class="det-row"><span class="det-lbl">Od</span><span>${r.from}</span></div>
+    <div class="det-row"><span class="det-lbl">Do</span><span>${r.to}</span></div>
+    <div class="det-row"><span class="det-lbl">Liczba dni</span><span>${d}</span></div>
+    <div class="det-row"><span class="det-lbl">Kwota</span><span style="font-weight:700;color:var(--brand)">${(r.total||0).toLocaleString('pl-PL')} zł</span></div>
+    <div class="det-row"><span class="det-lbl">Status</span><span class="sbadge ${SL[r.status].c}">${SL[r.status].l}</span></div>
+    ${r.notes?`<div class="det-row"><span class="det-lbl">Uwagi</span><span>${r.notes}</span></div>`:''}`;
+  const acts=document.getElementById('det-acts');acts.innerHTML='';
+  if(r.status==='new')acts.innerHTML+=`<button class="ab ok" onclick="setStatus(${id},'confirmed');closeDetail()">✓ Potwierdź</button>`;
+  if(r.status==='confirmed')acts.innerHTML+=`<button class="ab gr" onclick="setStatus(${id},'active');closeDetail()">▶ Aktywuj</button>`;
+  if(r.status==='active')acts.innerHTML+=`<button class="ab gr" onclick="setStatus(${id},'completed');closeDetail()">■ Zakończ</button>`;
+  if(['new','confirmed'].includes(r.status))acts.innerHTML+=`<button class="ab no" onclick="setStatus(${id},'cancelled');closeDetail()">✕ Anuluj</button>`;
+  document.getElementById('detailOv').classList.add('open');
+}
+function closeDetail(){document.getElementById('detailOv').classList.remove('open');}
+
+/* ── ADMIN FLEET ── */
+function renderAdmFleet(){
+  const cars=getCars(),res=getRes();
+  document.getElementById('adm-fleet-grid').innerHTML=cars.map(c=>{
+    const act=res.filter(r=>r.car===c.name&&['confirmed','active'].includes(r.status)).length;
+    return `<div class="fac">
+      <div class="fac-img">${c.emoji}<div class="fac-st"><span class="sbadge ${c.available?'s-confirmed':'s-cancelled'}" style="font-size:10px;">${c.available?'Aktywny':'Wyłączony'}</span></div></div>
+      <div class="fac-body">
+        <h4>${c.name}</h4><div class="ftype">${c.type}</div>
+        <div class="fprice">${c.price} zł <span>/dzień</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:6px;">Aktywne rez.: <strong>${act}</strong></div>
+        <div class="toggle-wrap">
+          <button class="toggle ${c.available?'on':''}" onclick="toggleCar(${c.id})"></button>
+          <span>${c.available?'Dostępny':'Wyłączony'}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleCar(id){
+  const cars=getCars(),idx=cars.findIndex(c=>c.id===id);
+  if(idx===-1)return;
+  cars[idx].available=!cars[idx].available;svCars(cars);
+  renderAdmFleet();renderPublicFleet();fillCarSelects();
+  showToast(`${cars[idx].name}: ${cars[idx].available?'Dostępny ✓':'Wyłączony ✗'}`,'success');
+}
+
+/* ── CALENDAR ── */
+let calY=new Date().getFullYear(),calM=new Date().getMonth();
+const MNTHS=['Styczeń','Luty','Marzec','Kwiecień','Maj','Czerwiec','Lipiec','Sierpień','Wrzesień','Październik','Listopad','Grudzień'];
+const DAYS=['Pon','Wt','Śr','Czw','Pt','Sob','Nie'];
+function calPrev(){calM--;if(calM<0){calM=11;calY--;}renderCal();}
+function calNext(){calM++;if(calM>11){calM=0;calY++;}renderCal();}
+function renderCal(){
+  const res=getRes();
+  document.getElementById('cal-title').textContent=`${MNTHS[calM]} ${calY}`;
+  const g=document.getElementById('cal-grid');
+  let html=DAYS.map(d=>`<div style="text-align:center;font-size:11px;font-weight:700;color:var(--muted);padding:6px;">${d}</div>`).join('');
+  const first=new Date(calY,calM,1);
+  let sd=first.getDay()-1;if(sd<0)sd=6;
+  for(let i=0;i<sd;i++)html+='<div></div>';
+  const dim=new Date(calY,calM+1,0).getDate();
+  const today=new Date().toISOString().split('T')[0];
+  for(let d=1;d<=dim;d++){
+    const ds=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dr=res.filter(r=>r.from<=ds&&r.to>=ds&&r.status!=='cancelled');
+    const isT=ds===today;
+    html+=`<div class="cal-day" style="background:${isT?'#FFFBEB':(dr.length?'#F0FDF4':'#fff')};border-color:${isT?'var(--brand)':'var(--border)'};cursor:${dr.length?'pointer':'default'};" ${dr.length?`onclick="showCalDay('${ds}')"`:''}>
+      <div style="font-size:12px;font-weight:${isT?800:600};color:${isT?'var(--brand)':'var(--text)'};">${d}</div>
+      ${dr.map(r=>`<div class="cal-res-pill">${r.car.split(' ')[0]}</div>`).join('')}
+    </div>`;
+  }
+  g.innerHTML=html;
+}
+function showCalDay(ds){
+  const res=getRes().filter(r=>r.from<=ds&&r.to>=ds&&r.status!=='cancelled');
+  if(!res.length)return;
+  document.getElementById('det-title').textContent='Rezerwacje: '+ds;
+  document.getElementById('det-sub').textContent=res.length+' rezerwacji';
+  document.getElementById('det-body').innerHTML=res.map(r=>`<div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;"><strong>${r.name}</strong> – ${r.car}<br><span style="font-size:13px;color:var(--muted);">${r.from} → ${r.to}</span> <span class="sbadge ${SL[r.status].c}" style="font-size:11px;">${SL[r.status].l}</span></div>`).join('');
+  document.getElementById('det-acts').innerHTML='';
+  document.getElementById('detailOv').classList.add('open');
+}
+
+/* ── CLIENTS ── */
+function renderClients(){
+  const res=getRes(),map={};
+  res.forEach(r=>{
+    if(!map[r.email])map[r.email]={name:r.name,email:r.email,phone:r.phone,cnt:0,total:0,last:''};
+    map[r.email].cnt++;map[r.email].total+=(r.total||0);
+    if(!map[r.email].last||r.from>map[r.email].last)map[r.email].last=r.from;
+  });
+  const cl=Object.values(map).sort((a,b)=>b.cnt-a.cnt);
+  document.getElementById('clients-tbody').innerHTML=cl.length?cl.map(c=>`<tr><td><strong>${c.name}</strong></td><td style="color:var(--muted)">${c.email}</td><td style="color:var(--muted)">${c.phone}</td><td style="text-align:center;font-weight:700">${c.cnt}</td><td>${c.last||'–'}</td><td style="font-weight:700;color:var(--brand)">${c.total.toLocaleString('pl-PL')} zł</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">Brak klientów</td></tr>';
+}
+
+/* ── SETTINGS ── */
+function changePass(){
+  const np=document.getElementById('s-np').value,cp=document.getElementById('s-cp').value;
+  if(!np){showToast('Wpisz nowe hasło','error');return;}
+  if(np!==cp){showToast('Hasła nie są zgodne','error');return;}
+  if(np.length<4){showToast('Hasło musi mieć min. 4 znaki','error');return;}
+  sv('bibi_pass',np);document.getElementById('s-np').value='';document.getElementById('s-cp').value='';
+  showToast('Hasło zmienione!','success');
+}
+
+/* ── TEST DATA ── */
+function seedData(){
+  const names=['Anna Kowalska','Piotr Nowak','Maria Wiśniewska','Tomasz Zając','Katarzyna Lis','Marek Dąbrowski'];
+  const emails=['anna@wp.pl','piotr@gmail.com','maria@o2.pl','tomasz@onet.pl','kasia@wp.pl','marek@gmail.com'];
+  const phones=['+48 600 100 200','+48 601 200 300','+48 502 300 400','+48 503 400 500','+48 604 500 600','+48 605 600 700'];
+  const cars=getCars();
+  const statuses=['new','new','confirmed','confirmed','active','completed','cancelled'];
+  let res=getRes();
+  let nid=(res.length?Math.max(...res.map(r=>r.id)):0)+1;
+  for(let i=0;i<12;i++){
+    const car=cars[Math.floor(Math.random()*cars.length)];
+    const df=Math.floor(Math.random()*60)-10;
+    const dur=Math.floor(Math.random()*7)+1;
+    const f=new Date();f.setDate(f.getDate()+df);
+    const t=new Date(f);t.setDate(t.getDate()+dur);
+    const ix=i%names.length;
+    res.push({id:nid++,name:names[ix],email:emails[ix],phone:phones[ix],car:car.name,from:f.toISOString().split('T')[0],to:t.toISOString().split('T')[0],total:car.price*dur,status:statuses[Math.floor(Math.random()*statuses.length)],notes:i%3===0?'Fotelik dziecięcy':'',created:new Date().toLocaleDateString('pl-PL')});
+  }
+  svRes(res);refreshDash();renderResTable();updateBadge();
+  showToast('Wygenerowano 12 przykładowych rezerwacji ✓','success');
+}
+function clearAll(){
+  if(!confirm('Usunąć WSZYSTKIE dane?'))return;
+  localStorage.removeItem('bibi_res');localStorage.removeItem('bibi_cars');
+  refreshDash();renderResTable();renderAdmFleet();updateBadge();
+  showToast('Wszystkie dane usunięte','success');
+}
+
+/* ── CSV EXPORT ── */
+function exportCSV(){
+  const res=getRes();
+  const h=['ID','Klient','Email','Telefon','Auto','Od','Do','Dni','Kwota','Status','Uwagi'];
+  const rows=res.map(r=>[r.id,r.name,r.email,r.phone,r.car,r.from,r.to,calcDays(r.from,r.to),(r.total||0),SL[r.status].l,r.notes||'']);
+  const csv=[h,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+  const b=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='bibicar_rezerwacje.csv';a.click();URL.revokeObjectURL(u);
+  showToast('Eksport CSV gotowy!','success');
+}
+
+/* ── FORMS ── */
+function mkRes(name,phone,email,from,to,car,notes){
+  const c=getCars().find(c=>c.name===car);
+  const days=calcDays(from,to);
+  const res=getRes();
+  return {id:(res.length?Math.max(...res.map(r=>r.id)):0)+1,name,phone,email,car,from,to,total:(c?c.price:0)*days,status:'new',notes,created:new Date().toLocaleDateString('pl-PL')};
+}
+function submitModalForm(e){
+  e.preventDefault();
+  const from=document.getElementById('mf-from').value,to=document.getElementById('mf-to').value;
+  if(from>to){showToast('Data końca musi być po dacie startu','error');return;}
+  const r=mkRes(document.getElementById('mf-name').value,document.getElementById('mf-phone').value,document.getElementById('mf-email').value,from,to,document.getElementById('mf-car').value,document.getElementById('mf-notes').value);
+  const res=getRes();res.push(r);svRes(res);
+  closeModal();e.target.reset();updateBadge();
+  showToast(`✅ Rezerwacja #${r.id} złożona!\nCena: ${r.total} zł. Odezwiemy się wkrótce.`,'success');
+}
+function submitPageForm(e){
+  e.preventDefault();
+  const from=document.getElementById('pf-from').value,to=document.getElementById('pf-to').value;
+  if(from>to){showToast('Data końca musi być po dacie startu','error');return;}
+  const r=mkRes(document.getElementById('pf-name').value,document.getElementById('pf-phone').value,document.getElementById('pf-email').value,from,to,document.getElementById('pf-car').value,document.getElementById('pf-notes').value);
+  const res=getRes();res.push(r);svRes(res);
+  e.target.reset();updateBadge();
+  showToast(`✅ Rezerwacja #${r.id} złożona!\nCena: ${r.total} zł. Odezwiemy się wkrótce.`,'success');
+}
+
+/* ── MODAL ── */
+function openModal(car){
+  document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(car){const s=document.getElementById('mf-car');for(let o of s.options){if(o.text.startsWith(car)){s.value=o.value||o.text;break;}}}
+}
+function closeModal(){document.getElementById('modalOv').classList.remove('open');document.body.style.overflow='';}
+
+/* ── UTILS ── */
+function calcDays(f,t){if(!f||!t)return 0;return Math.max(Math.ceil((new Date(t)-new Date(f))/86400000),1);}
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className=`toast ${type} show`;
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),4200);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDetail();}});
+</script>
+</body>
+</html>
